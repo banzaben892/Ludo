@@ -13,10 +13,10 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: '18'
         cache: 'npm'
@@ -27,25 +27,25 @@ jobs:
     - name: Install EAS CLI
       run: npm install -g eas-cli
     
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v2
+    - name: Setup Java
+      uses: actions/setup-java@v3
       with:
-        api-level: 31
-        build-tools-version: '31.0.0'
+        distribution: 'temurin'
+        java-version: '11'
     
-    - name: Build APK locally
-      run: |
-        npm run build:android || true
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
     
-    - name: Create APK artifact
+    - name: Build APK
       run: |
-        mkdir -p ./apk-output
-        cp -r dist/* ./apk-output/ || true
+        npx eas build --platform android --local --non-interactive || echo "Build skipped"
     
     - name: Upload APK
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ludo-game-apk
-        path: ./apk-output
+        path: |
+          dist
+          build
         retention-days: 30
-        if-no-files-found: ignore
+        if-no-files-found: warn
