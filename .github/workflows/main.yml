@@ -10,41 +10,28 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-    
-    - name: Install dependencies
-      run: npm install
-    
-    - name: Install EAS CLI
-      run: npm install -g eas-cli
-    
-    - name: Setup Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: 'temurin'
-        java-version: '11'
-    
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-    
-    - name: Build APK
-      run: |
-        npx eas build --platform android --local --non-interactive || echo "Build skipped"
-    
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: ludo-game-apk
-        path: |
-          dist
-          build
-        retention-days: 30
-        if-no-files-found: warn
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Clean npm cache
+        run: |
+          npm cache clean --force
+          rm -rf node_modules
+          rm -f package-lock.json
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Install Expo CLI
+        run: npm install -g expo-cli
+
+      - name: Build APK
+        run: |
+          npx expo export
